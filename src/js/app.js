@@ -57,6 +57,9 @@ App = {
         		let candidateResults = $("#candidatesResults");
         		candidateResults.empty();
 
+				let candidateSelect = $('#candidatesSelect');
+				candidateSelect.empty();
+
 			for (let idx = 1; idx <= CandidateCount; idx++) {
 				electionInstance.candidates(idx).then(function (candidate) {
 					let id = candidate[0];
@@ -73,7 +76,14 @@ App = {
 					votes +
 					"</td></tr>";
 					candidateResults.append(candidateTemplate);
+
+					// Render candidate ballot option
+					let candidateOption = "<option value='" + id + "' >" 
+					+ name + "</ option>";
+					candidateSelect.append(candidateOption); 
 				});
+
+				
     	}
 
 		loader.hide();
@@ -83,7 +93,21 @@ App = {
 		console.warn(err);
 	})
   	},
+
+	castVote: function() {
+		let candidateId = $('#candidatesSelect').val();
+		App.contracts.Election.deployed().then(function(instance) {
+			return instance.vote(candidateId, {from: App.account})
+		}).then(function(result) {
+			// waiting for votes to update
+			$('#content').hide();
+			$('#loader').show();
+		}).catch(function(err) {
+			console.error(err);
+		});
+	}
 };
+
 
 $(function () {
   $(window).load(function () {
