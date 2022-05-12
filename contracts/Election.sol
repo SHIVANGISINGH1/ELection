@@ -17,6 +17,11 @@ contract Election {
     // for sotring the voters info
     mapping(address => bool) public voters;
 
+     
+    event votedEvent (
+        uint indexed_candidateId
+    );
+
     constructor(){
         addCandidate("Candidate 1");
         addCandidate("Candidate 2");
@@ -39,5 +44,8 @@ contract Election {
         voters[msg.sender] = true;
         // update candidate vote count
         candidates[_candidateId].voteCount++;
+
+        // trigger voted event
+        emit votedEvent(_candidateId);
     }
 }
